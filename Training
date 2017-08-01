@@ -1,3 +1,7 @@
+MS PowerShell Training Basic
+##############################################################################################################
+##Day1####
+
 (get-command).count                         "to get the no of command"
 get-command *service*                       "to get the command for the services"
 get-command *service* -CommandType cmdlet - "to get only cmdlet commands"
@@ -72,9 +76,9 @@ $env:TEMP                     "env = environment variable"
 
 Get-ChildItem c:\windows\system32\*.txt -Recurse | Select-String -Pattern "Microsoft" -CaseSensitive "find the string into the files in perticular drive, if we lost."
 
-$list = @{Name = "PC01"; IP="10.10.10.1";User="Naveen Jaiswal"}   "its a hash table where we get the information"
+$list = @{Name = "PC01"; IP="10.10.10.1";User="Tigeruss"}   "its a hash table where we get the information"
 $list
-$list = @{Name="Naveen Jaiswal"}, @{Sub = "Maths"; Marks1="74"}, @{Sub = "English"; Marks2="87"} | Measure-Object "testing"
+$list = @{Name="Tigeruss"}, @{Sub = "Maths"; Marks1="74"}, @{Sub = "English"; Marks2="87"} | Measure-Object "testing"
 
 
 $temp = 1..100
@@ -112,4 +116,438 @@ Get-WmiObject -Class Win32_NetworkAdapterConfiguration -Filter 'ipenabled=true' 
 @{n="ipaddress";e={$_.ipaddress -join '; '}}
 } 
 $output | Export-Csv C:\temp\TestScript\ntwrk.csv -NoTypeInformation
+
+####################################################################################################################################
+
+
+
+##Day2######
+
+#examples of foreach loop
+WMF & .net
+
+# to check the server on remote servers
+
+$Server = Get-Content "C:\temp\computername.txt"
+foreach ($check in $Server) 
+{
+$ser = Get-Service -Name Spooler -ComputerName $check 
+If($ser.Status -eq "running")
+{
+Write-Host "Services is Running"
+
+}
+else {
+$ser.Start()
+Write-Host "Services is not running,So restarting the services" -BackgroundColor Yellow
+}
+}
+
+
+$Server = Get-Content "C:\temp\computername.txt"
+foreach ($check in $Server)
+{
+Get-Service -Name Spooler -ComputerName $check | select MachineName,name,status > C:\temp\result.txt
+}
+
+$Server = Get-Content "C:\temp\computername.txt"
+$result = foreach ($check in $Server)
+{
+Get-Service -Name Spooler -ComputerName $check | select MachineName,name,status
+}
+$result | Out-File C:\temp\result.txt
+$result | Export-Csv C:\temp\result.csv -NoTypeInformation #-NoTypeInformation is to ignore the first unnessary line
+
+
+$files = (Get-ChildItem -Path "C:\temp\TestScript")
+$report = foreach ($a in $files)
+{ 
+$a | select name,*path,lenth, lastWriteTime
+}
+$report | Out-File C:\temp\report.txt
+
+######## do-until condition
+$a=0
+do
+{
+Write-Host "Powershell is powerfull $a"
+$a++
+}
+until ($a -eq 5)
+
+#### for loop conditions
+
+for ($i=1; $i -le 5; $i++){Write-Host $i}
+
+####################################################################
+########### WMI Objects
+Get-WmiObject -List            #to get the details of the WMI object list
+Get-WmiObject -List *bios*    ## how to find the class
+Get-WmiObject -Class win32_bios       ##to get the BIOS information of the system
+Get-WmiObject -Class win32_bios | gm   ## to get the all propertied
+
+
+$servers = Get-Content C:\temp\computername.txt
+foreach ($Server in $servers)
+{
+Get-WmiObject -Class win32_bios -ComputerName $Server | select PSComputerName, BIOSVe*, Desc*, Serial*, Manufact*
+} 
+
+
+$servers = Get-Content C:\temp\computername.txt
+foreach ($Server in $servers)
+{
+Get-WmiObject -Class Win32_SystemOperatingSystem -ComputerName $Server} | select PSComputerName, BIOSVe*, Desc*, Serial*, Manufact*
+} 
+
+
+$servers = Get-Content C:\temp\computername.txt
+foreach ($Server in $servers)
+{
+Get-WmiObject -Class Win32_OperatingSystem -ComputerName $Server | select OSArchitecture, ServicePackMajorVersion, OperatingSystemSKU, Caption, LastBootUpTime, TotalVirtualMemorySize, Version
+} 
+
+
+###if we need date & time in proper format; @ = # table format
+
+$servers = Get-Content C:\temp\computername.txt
+foreach ($Server in $servers)
+{
+Get-WmiObject -Class Win32_OperatingSystem -ComputerName $Server | select __server, OSArchitecture, ServicePackMajorVersion, OperatingSystemSKU, Caption, 
+@{n="LastBootUpTime";e={$_.converttodatetime($_.lastbootuptime)}}, TotalVirtualMemorySize, Version
+} 
+
+
+### testing for single server n=name and e=expression
+
+$servers = "localhost"
+foreach ($Server in "localhost")
+{
+Get-WmiObject -Class Win32_OperatingSystem -ComputerName $Server | select __server, OSArchitecture, ServicePackMajorVersion, OperatingSystemSKU, Caption, 
+@{n="LastBootUpTime";e={$_.converttodatetime($_.lastbootuptime)}}, TotalVirtualMemorySize, Version
+} 
+
+
+##error handing
+
+$servers = Get-Content C:\temp\computername.txt
+$result=foreach ($Server in $servers)
+{
+Get-WmiObject -Class Win32_OperatingSystem -ComputerName $Server -ErrorAction Continue | select __server, OSArchitecture, ServicePackMajorVersion, OperatingSystemSKU, Caption, 
+@{n="LastBootUpTime";e={$_.converttodatetime($_.lastbootuptime)}}, TotalVirtualMemorySize, Version
+} 
+$result | Export-Csv C:\temp\errhndl.csv -NoTypeInformation
+
+
+$servers = Get-Content C:\temp\computername.txt
+$output=foreach ($Server in $servers)
+{
+Get-WmiObject -Class Win32_NetworkAdapterConfiguration -Filter 'ipenabled=true' -ComputerName $Server | select __SERVER, DNS,
+@{n="ipaddress";e={$_.ipaddress}}
+} 
+$output | Export-Csv C:\temp\ntwrk.csv -NoTypeInformation
+
+
+@{n="ipaddress";e={$_.ipaddress -join '; '}}
+
+
+
+#######################################################################################################################33
+
+#####Day3####################
+########### WMI Objects
+Get-WmiObject -List            #to get the details of the WMI object list
+Get-WmiObject -List *bios*    ## how to find the class
+Get-WmiObject -Class win32_bios       ##to get the BIOS information of the system
+Get-WmiObject -Class win32_bios | gm   ## to get the all propertied
+
+##test-connection is the command to check the server connection
+
+$ping = Get-Content C:\temp\computername.txt
+$output=foreach ($Server in $ping)
+{
+Get-WmiObject -Class Win32_NetworkAdapterConfiguration -Filter 'ipenabled=true' -ComputerName $Server | select __SERVER, DNS,
+@{n="ipaddress";e={$_.ipaddress}}
+} 
+$output | Export-Csv C:\temp\ntwrk.csv -NoTypeInformation
+
+
+
+## Ping check on remote servers
+
+$compname = Get-Content C:\temp\computername.txt
+$output=foreach ($Server in $compname){
+If (Test-Connection -ComputerName $Server -Count 1 -ErrorAction Ignore)
+{
+Write-Output "$Server is Pinging"
+} 
+Else
+{
+Write-Output "$Server is not reachable"
+}}
+$output | Out-File C:\temp\ping1.txt
+
+
+#################### Disk Check Space
+
+$compname = Get-Content C:\temp\computername.txt
+$result=foreach ($Server in $compname)
+{
+Get-WmiObject -Class Win32_LogicalDisk -Filter 'drivetype="3"' -ComputerName $Server -ErrorAction SilentlyContinue | Select __server,DeviceID,
+@{n="Size(GB)";e={$_.size /1gb -as [int]}},
+@{n="FreeSpace(GB)";e={$_.FreeSpace /1gb -as [int]}},
+@{n="Free%(GB)";e={($_.FreeSpace / $_.size)*100 -as [int] }}
+}
+$result | Export-Csv C:\temp\Space.csv -NoTypeInformation
+
+##get the details of the install software
+
+##Get-ItemProperty HKLM:\Software\etc tec\*
+##Select displayname
+
+## run the same command on remote machine
+Invoke-Command -ComputerName $server -ScriptBlock{
+Get-ItemProperty HKLM:\Software\etc etc\*
+Select displayname}
+
+#################################################
+
+$compname = Get-Content C:\temp\computername.txt
+foreach ($Server in $compname)
+{
+Get-WmiObject -Class Win32_product -ComputerName $Server | ? {$_.softwarename -like "SQL"} | Select __Server,softwareName, DisplayVersion
+}
+$result | Export-Csv C:\temp\softwaredetails.csv -NoTypeInformation
+
+Get-WmiObject -Class Win32_product | ? {$_.name -like "*office*"} | Select __Server,softwareName, DisplayVersion
+
+##################################33
+
+##Enable PSSession on remote system
+##port 5985 5986 to enable the PSRemote command.
+##Get-PSdrive = reposatary og the information.
+Set-Location HKLM:  ##to set/change the location to HKLM
+
+Copy-Item 
+New-PSDrive ## to configure the network drive
+
+########################3
+##creating Excelsheel from the PS command for output.
+$a= New-Object -ComObject excel.application
+$a.visible = $true
+$b = $a.workbooks.add()
+$c = $b.worksheets.item(1)
+$c.cells.item(1,1) = "Machine Name"
+$c.cells.item(1,2) = "Caption"
+$c.cells.item(1,3) = "Desc"
+
+
+#####################################################################################################################
+
+####Day4################
+
+########################3
+##creating Excelsheel from the PS command for output.
+
+$ErrorActionPreference = "SilentlyContinue"
+$a= New-Object -ComObject excel.application
+$a.visible = $true
+$b = $a.workbooks.add()
+$c = $b.worksheets.item(1)
+$c.cells.item(1,1) = "Server"
+$c.cells.item(1,2) = "caption"
+$c.cells.item(1,3) = "manufacturer"
+$c.cells.item(1,4) = "name"
+
+$d = $c.UsedRange
+
+#$d.EntireColumn.AUTOFit($True)
+
+$introw = 2
+$compname = Get-Content C:\temp\computername.txt
+foreach ($computer in $compname)
+{
+$c.cells.Item($introw, 1) = $computer
+$colos = Get-WmiObject -Class Win32_Processor -ComputerName $computer 
+
+foreach($objcomp in $colos)
+{
+#$c.cells.Item($introw, 1) = $objcomp.pscomputername
+$c.cells.item($introw, 2) = $objcomp.caption
+$c.cells.item($introw, 3) = $objcomp.manufacturer
+$c.cells.item($introw, 4) = $objcomp.name
+
+$introw = $introw + 1
+}
+
+}
+$b.SaveAs("C:\temp\chklist.xls")
+
+
+###################################################################
+
+
+###### how we define a funtion
+##add funtion
+function add-no ($arg1, $agr2)
+{
+$arg1 + $agr2
+    
+}
+
+or
+function add-no
+{
+$arg1 + $agr2
+    
+}
+
+Get-Command *add-no*
+
+
+
+function add-no ($arg1, $agr2)
+{
+$c = $arg1 + $agr2
+Write-Host "sum of two no are $c"
+    
+}
+
+function add-no 
+{
+##define parameter under the {
+param($arg1, $agr2)
+$c = $arg1 + $agr2
+Write-Host "sum of two no are $c"
+}
+
+###############################3
+
+function chk-dir ($dir)
+{
+Write-host "Enter the Path"
+Get-ChildItem -path $dir
+}
+
+
+################################3
+##get the os information
+function get-os ($pros,$comp)
+{
+Write-Host "OS informaiton is;"
+$pros = Get-WmiObject -Class Win32_operatingsystem -ComputerName $comp
+$pros
+}
+
+
+######### get the cpu utilization
+
+function get-cpu ($comp,$file)
+{
+$file = Get-Content C:\temp\computername.txt
+##Write-Host "Entered computername" $comp
+Get-WmiObject -Class win32_processor -ComputerName $file | select PSComputerName, CpuStatus
+}
+
+##OR
+function get-cpu ([string[]]$comp)
+{
+Get-WmiObject -Class win32_processor -ComputerName $comp | select PSComputerName, Manufacturer
+
+}
+
+## PSSession command
+Enter-PSSession -ComputerName 
+Enter-PSSession -ComputerName comname 
+$cred = Get-Credential
+
+Stop-Computer -ComputerName compname -Force
+
+############################################################################################################
+
+####Day5####################################
+
+##get the office details of the system which are having Visual studio as well.
+
+Get-WmiObject -Class win32_product | where { $_.name -like "*office*" -and $_.name -like "*visual*"}
+
+## Logical Operator;
+gt
+eq
+neq
+ne
+ge
+Like
+!like
+match
+split
+not match
+
+## run the 5th command from the history
+ invoke-history 5
+
+
+ ##Get today dates
+ (Get-Date).AddDays(-1)
+
+$t = (Get-Date).AddDays(-1)
+Get-EventLog -LogName System -EntryType Error | where {$_.timegenerated -gt $t} | Export-Csv c:\temp\events.csv -NoTypeInformation
+
+#send email through the script
+Send-MailMessage -To "name@abc.com" -From "name2@abc.com" -Subject "event Reports" -Attachments 'C:\temp\events.csv' -SmtpServer 
+
+
+
+##Error handling syntext
+try
+{
+I/O
+}
+Catch [DividebyZeroException]
+{
+Message ""
+}
+Finally
+{
+do-something alsway,wheter a terminating error occured or not.
+}
+
+
+##Example
+
+$compname = Get-Content "C:\temp\servers.txt"
+foreach ($server in $compname){
+Try
+{
+Get-WmiObject -Class win32_operatingsystem -ComputerName $server -ErrorAction Stop | select __server, caption
+}
+Catch
+{
+Write-Host "$server is not reachable"  -ForegroundColor Yellow #$_.Exception.Message -ForegroundColor Yellow
+}
+}
+
+
+
+##Trap command, if we have more error in output then we can suppose to use the TRAP .. -f is used for the fraction
+
+
+trap {
+Write-Warning ('Failed to access "{0}" : {1} in "{2}"' -f $currentcomputer,`   ## ` carrot is used to break the lines
+$_.exception.message, $_.InvocationInfo.scriptname)
+continue
+}
+
+Get-Content "c:\temp\servers.txt"
+ ForEach-Object {
+    $currentcomputer = $_
+    Get-WmiObject -Class win32_bios -ComputerName $currentcomputer -ErrorAction Stop
+    Select-Object __server,version
+    }
+
+
+
+#####################################################################################################################
+
+
 
