@@ -1,0 +1,115 @@
+(get-command).count                         "to get the no of command"
+get-command *service*                       "to get the command for the services"
+get-command *service* -CommandType cmdlet - "to get only cmdlet commands"
+get-help Get-Service -Examples              "To get the command with help"
+Get-Service                                 "yo get the list of service"
+Get-Service W*,s*                          "to get all the services info with start with s and w word."
+Get-Service -displayname *network*         "to get the Network name services only"
+Get-Service -name win* -exclude winrm      "to get the service details with Win only bu exclude winrm"
+Get-Service | Where-Object {$_.Status -eq "Running"}       "only get the information of running services"
+Get-service | Select MachineName,ServiceName,ServiceType,Status      "Taking output of the parameters"
+Get-Service -Name spooler -ComputerName ABCD     "to get the details of the Remote mschine details"
+Get-Service -Name spooler -ComputerName ABCD |gm     "Get the member list of the perticular serivce gm - get member"
+Start-Transcript  "to output the command in file"
+help Get-Service -full               "it will take the MS site to learn such command"
+Get-Service -ComputerName [] "[] is array to get the info of multiple remote server"
+(Get-Service -Name Spooler).Start()          "to start the services"
+Get-EventLog -LogName System -Newest 20       "to get the event logs"
+Get-EventLog -LogName System -Newest 20 -EntryType Warning "for warning logs"
+Get-Service | Out-GridView         "to get the command in grid format and will get pop-up message"
+
+Get-ChildItem -Path "C:\temp" | where {$_.Extension -eq ".txt"}   "To search the txt file on desktop"
+
+New-Item -Path "C:\temp\TestScript" -ItemType Directory    "create Dir"
+Add-Content "C:\temp\TestScript\test1.txt" -Value "this is test file"       "edit file"
+Test-Path "C:\temp\TestScript\test1.txt" "to get the confimation of the file with true or false"
+Write-Host "powershell  is poerfull" -backgroundcolor red "is used to display or take the input"
+Write-Output "Powershell is powerfull"  "show the message only"
+
+
+Clear-Content -Path "C:\Temp" "need to write the command"
+
+
+Read-Host "Enter your server name"              "For prompt $ = variable"
+
+$clrtemp = "C:\temp\*.*"
+$dismsg = Write-Host "Temp folder is going to be deleted $clrtemp, do you want to continue Yes/No" -backgroundcolor red
+Read-Host "Enter Y/N"
+If ($status -eq $Y) | Clear-Content $clrtemp
+Write-host "Task Completed" -backgroundcolor Green
+Else {Write-Host "No Task executed"}
+
+
+Set-ExecutionPolicy RemoteSigned                      "chnage the execution policy"
+Get-ExecutionPolicy                     "get the status"
+
+$temp = 24
+If ($temp -cle 10) {"Its Cold outside"}
+elseif ($temp -cge 20) {"Temp is Normal"}
+else {"Over Temp"}
+
+
+function test ($VALUE) {
+if ($VALUE) {
+Write-Host -ForegroundColor GREEN “TRUE”
+} else {
+Write-Host -ForegroundColor RED   “FALSE”
+}
+}
+
+Get-Alias      "to get the short form of all commands"
+
+Get-Process | where {$_.Handles -gt 500}            "Get the details of process which are handles are above 500"
+Get-Process | where {$_.Handles -gt 500} | Export-Csv C:\temp\test.csv  "Export the output in csv file"
+
+Set-Alias prosout Get-Process    "create own alias"
+
+$_ "use to get the property from the local commands"
+
+Invoke-Command -ComputerName localhost -ScriptBlock {Get-Service}  "run the command on remote machines"
+
+$env:TEMP                     "env = environment variable"
+
+Get-ChildItem c:\windows\system32\*.txt -Recurse | Select-String -Pattern "Microsoft" -CaseSensitive "find the string into the files in perticular drive, if we lost."
+
+$list = @{Name = "PC01"; IP="10.10.10.1";User="Naveen Jaiswal"}   "its a hash table where we get the information"
+$list
+$list = @{Name="Naveen Jaiswal"}, @{Sub = "Maths"; Marks1="74"}, @{Sub = "English"; Marks2="87"} | Measure-Object "testing"
+
+
+$temp = 1..100
+Read-Host "Enter Temp"
+If ($temp -cle 10)  {Write-Host "Temp cold outside" -backgroundcolor green}
+elseif ($temp -cle 20) {Write-Host "Temp is Normal" -backgroundcolor Blue} 
+else {Write-Host "Over Temp" -backgroundcolor Red}
+
+$ver1 = Get-Service Spooler
+If ($ver1.Status -eq "Running") 
+{Write-Host "Services is Running" -backgroundcolor green}
+else {
+Write-Host "Services is not running,So restarting the services" -BackgroundColor Yellow
+$ver1.Start()
+$ver1
+Write-Host "Service Restarted" -BackgroundColor Green
+}
+
+
+$size = (Get-ChildItem -Path "C:\temp").Length
+If ($size -gt "50byte")
+{Write-Host "Below are the Files Details"
+
+
+$files = (Get-ChildItem -Path "C:\temp" -Recurse) | ? {$_.Length -gt 50} | select name,*path,lenth
+$files
+
+{Write-Host "Below are the Files Details"
+
+
+$servers = Get-Content C:\temp\TestScript\computername.txt
+$output=foreach ($Server in $servers)
+{
+Get-WmiObject -Class Win32_NetworkAdapterConfiguration -Filter 'ipenabled=true' -ComputerName $Server | select __SERVER, DNS, DefaultIPGateway, Caption,IPSubnet,ipaddress
+@{n="ipaddress";e={$_.ipaddress -join '; '}}
+} 
+$output | Export-Csv C:\temp\TestScript\ntwrk.csv -NoTypeInformation
+
