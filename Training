@@ -1,3 +1,15 @@
+##If someone getting the problem with the Script running/Module Import issue on PS then need to Change the Windows PowerShell Script Execution Policy.
+he Set-ExecutionPolicy cmdlet enables you to determine which Windows PowerShell scripts (if any) will be allowed to run on your computer. Windows PowerShell has four different execution policies:
+Restricted - No scripts can be run. Windows PowerShell can be used only in interactive mode.
+AllSigned - Only scripts signed by a trusted publisher can be run.
+RemoteSigned - Downloaded scripts must be signed by a trusted publisher before they can be run.
+Unrestricted - No restrictions; all Windows PowerShell scripts can be run.
+To assign a particular policy simply call Set-ExecutionPolicy followed by the appropriate policy name. For example, this command sets the execution policy to RemoteSigned:
+
+Set-ExecutionPolicy RemoteSigned
+
+###############################################################################################################
+
 MS PowerShell Training Basic
 ##############################################################################################################
 ##Day1####
