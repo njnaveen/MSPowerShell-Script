@@ -1,10 +1,12 @@
-##If someone getting the problem with the Script running/Module Import issue on PS then need to Change the Windows PowerShell Script Execution Policy.
-he Set-ExecutionPolicy cmdlet enables you to determine which Windows PowerShell scripts (if any) will be allowed to run on your computer. Windows PowerShell has four different execution policies:
+##If someone getting the problem with the Script running/Module Import issue on PS then need to Change the Windows PowerShell Script 
+Execution Policy.he Set-ExecutionPolicy cmdlet enables you to determine which Windows PowerShell scripts (if any) will be allowed to 
+run on your computer. Windows PowerShell has four different execution policies:
 Restricted - No scripts can be run. Windows PowerShell can be used only in interactive mode.
 AllSigned - Only scripts signed by a trusted publisher can be run.
 RemoteSigned - Downloaded scripts must be signed by a trusted publisher before they can be run.
 Unrestricted - No restrictions; all Windows PowerShell scripts can be run.
-To assign a particular policy simply call Set-ExecutionPolicy followed by the appropriate policy name. For example, this command sets the execution policy to RemoteSigned:
+To assign a particular policy simply call Set-ExecutionPolicy followed by the appropriate policy name. For example, this command sets 
+the execution policy to RemoteSigned:
 
 Set-ExecutionPolicy RemoteSigned
 
@@ -86,7 +88,8 @@ Invoke-Command -ComputerName localhost -ScriptBlock {Get-Service}  "run the comm
 
 $env:TEMP                     "env = environment variable"
 
-Get-ChildItem c:\windows\system32\*.txt -Recurse | Select-String -Pattern "Microsoft" -CaseSensitive "find the string into the files in perticular drive, if we lost."
+Get-ChildItem c:\windows\system32\*.txt -Recurse | Select-String -Pattern "Microsoft" -CaseSensitive "find the string into the files 
+in perticular drive, if we lost."
 
 $list = @{Name = "PC01"; IP="10.10.10.1";User="Tigeruss"}   "its a hash table where we get the information"
 $list
@@ -124,7 +127,8 @@ $files
 $servers = Get-Content C:\temp\TestScript\computername.txt
 $output=foreach ($Server in $servers)
 {
-Get-WmiObject -Class Win32_NetworkAdapterConfiguration -Filter 'ipenabled=true' -ComputerName $Server | select __SERVER, DNS, DefaultIPGateway, Caption,IPSubnet,ipaddress
+Get-WmiObject -Class Win32_NetworkAdapterConfiguration -Filter 'ipenabled=true' -ComputerName $Server | select __SERVER, DNS, 
+DefaultIPGateway, Caption,IPSubnet,ipaddress
 @{n="ipaddress";e={$_.ipaddress -join '; '}}
 } 
 $output | Export-Csv C:\temp\TestScript\ntwrk.csv -NoTypeInformation
@@ -216,7 +220,8 @@ Get-WmiObject -Class Win32_SystemOperatingSystem -ComputerName $Server} | select
 $servers = Get-Content C:\temp\computername.txt
 foreach ($Server in $servers)
 {
-Get-WmiObject -Class Win32_OperatingSystem -ComputerName $Server | select OSArchitecture, ServicePackMajorVersion, OperatingSystemSKU, Caption, LastBootUpTime, TotalVirtualMemorySize, Version
+Get-WmiObject -Class Win32_OperatingSystem -ComputerName $Server | select OSArchitecture, ServicePackMajorVersion, OperatingSystemSKU, 
+Caption, LastBootUpTime, TotalVirtualMemorySize, Version
 } 
 
 
@@ -225,7 +230,8 @@ Get-WmiObject -Class Win32_OperatingSystem -ComputerName $Server | select OSArch
 $servers = Get-Content C:\temp\computername.txt
 foreach ($Server in $servers)
 {
-Get-WmiObject -Class Win32_OperatingSystem -ComputerName $Server | select __server, OSArchitecture, ServicePackMajorVersion, OperatingSystemSKU, Caption, 
+Get-WmiObject -Class Win32_OperatingSystem -ComputerName $Server | select __server, OSArchitecture, ServicePackMajorVersion, 
+OperatingSystemSKU, Caption, 
 @{n="LastBootUpTime";e={$_.converttodatetime($_.lastbootuptime)}}, TotalVirtualMemorySize, Version
 } 
 
@@ -235,7 +241,8 @@ Get-WmiObject -Class Win32_OperatingSystem -ComputerName $Server | select __serv
 $servers = "localhost"
 foreach ($Server in "localhost")
 {
-Get-WmiObject -Class Win32_OperatingSystem -ComputerName $Server | select __server, OSArchitecture, ServicePackMajorVersion, OperatingSystemSKU, Caption, 
+Get-WmiObject -Class Win32_OperatingSystem -ComputerName $Server | select __server, OSArchitecture, ServicePackMajorVersion, 
+OperatingSystemSKU, Caption, 
 @{n="LastBootUpTime";e={$_.converttodatetime($_.lastbootuptime)}}, TotalVirtualMemorySize, Version
 } 
 
@@ -245,7 +252,8 @@ Get-WmiObject -Class Win32_OperatingSystem -ComputerName $Server | select __serv
 $servers = Get-Content C:\temp\computername.txt
 $result=foreach ($Server in $servers)
 {
-Get-WmiObject -Class Win32_OperatingSystem -ComputerName $Server -ErrorAction Continue | select __server, OSArchitecture, ServicePackMajorVersion, OperatingSystemSKU, Caption, 
+Get-WmiObject -Class Win32_OperatingSystem -ComputerName $Server -ErrorAction Continue | select __server, OSArchitecture, 
+ServicePackMajorVersion, OperatingSystemSKU, Caption, 
 @{n="LastBootUpTime";e={$_.converttodatetime($_.lastbootuptime)}}, TotalVirtualMemorySize, Version
 } 
 $result | Export-Csv C:\temp\errhndl.csv -NoTypeInformation
@@ -305,7 +313,8 @@ $output | Out-File C:\temp\ping1.txt
 $compname = Get-Content C:\temp\computername.txt
 $result=foreach ($Server in $compname)
 {
-Get-WmiObject -Class Win32_LogicalDisk -Filter 'drivetype="3"' -ComputerName $Server -ErrorAction SilentlyContinue | Select __server,DeviceID,
+Get-WmiObject -Class Win32_LogicalDisk -Filter 'drivetype="3"' -ComputerName $Server -ErrorAction SilentlyContinue | Select __server,
+DeviceID,
 @{n="Size(GB)";e={$_.size /1gb -as [int]}},
 @{n="FreeSpace(GB)";e={$_.FreeSpace /1gb -as [int]}},
 @{n="Free%(GB)";e={($_.FreeSpace / $_.size)*100 -as [int] }}
@@ -327,7 +336,8 @@ Select displayname}
 $compname = Get-Content C:\temp\computername.txt
 foreach ($Server in $compname)
 {
-Get-WmiObject -Class Win32_product -ComputerName $Server | ? {$_.softwarename -like "SQL"} | Select __Server,softwareName, DisplayVersion
+Get-WmiObject -Class Win32_product -ComputerName $Server | ? {$_.softwarename -like "SQL"} | Select __Server,softwareName, 
+DisplayVersion
 }
 $result | Export-Csv C:\temp\softwaredetails.csv -NoTypeInformation
 
